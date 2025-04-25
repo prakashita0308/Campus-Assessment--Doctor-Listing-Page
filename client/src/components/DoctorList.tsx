@@ -15,8 +15,10 @@ export default function DoctorList({ doctors, filterState }: DoctorListProps) {
     }
 
     // Filter by consultation type
-    if (filterState.consultationType) {
-      if (!doctor.consultationType.includes(filterState.consultationType as ConsultationType)) {
+    if (filterState.consultationType && typeof filterState.consultationType === 'string' && filterState.consultationType.length > 0) {
+      // Only apply the filter if it's a non-empty string (not the "All" option)
+      const filterConsultType = filterState.consultationType as ConsultationType;
+      if (!doctor.consultationType.includes(filterConsultType)) {
         return false;
       }
     }

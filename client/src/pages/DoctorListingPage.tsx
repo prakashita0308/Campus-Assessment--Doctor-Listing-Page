@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDoctors } from "@/lib/api";
 import { useQueryParams } from "@/hooks/useQueryParams";
-import { Doctor, ConsultationType } from "@/types/doctor";
+import { Doctor, ConsultationType, DoctorFilterState } from "@/types/doctor";
 
 import DoctorSearch from "@/components/DoctorSearch";
 import FilterSidebar from "@/components/FilterSidebar";
@@ -11,7 +11,23 @@ import DoctorList from "@/components/DoctorList";
 export default function DoctorListingPage() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [specialties, setSpecialties] = useState<string[]>([]);
-  const [filterState, updateQueryParams] = useQueryParams();
+  
+  // Local filter state to ensure reliable UI updates
+  const [localFilterState, setLocalFilterState] = useState<DoctorFilterState>({
+    search: "",
+    specialties: [],
+    consultationType: '',
+    sortBy: ''
+  });
+  
+  // URL parameters for page state persistence
+  const [urlFilterState, updateQueryParams] = useQueryParams();
+  
+  // Combine URL state with local state, prioritizing URL state for initial load
+  const filterState = {
+    ...localFilterState,
+    ...urlFilterState
+  };
 
   // Fetch doctors data
   const { data, isLoading, error } = useQuery({
@@ -66,13 +82,41 @@ export default function DoctorListingPage() {
     }
   }, [data]);
 
+  // Note: We're using a ref to avoid the useEffect dependency on filterState
+  const mountedRef = React.useRef(false);
+  
+  // Sync URL params to local state on initial mount only
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      
+      // Cast to ensure type compatibility with DoctorFilterState
+      const initialState: DoctorFilterState = {
+        search: urlFilterState.search || "",
+        specialties: urlFilterState.specialties || [],
+        consultationType: (urlFilterState.consultationType || '') as (ConsultationType | ''),
+        sortBy: (urlFilterState.sortBy || '') as ('fees' | 'experience' | '')
+      };
+      
+      setLocalFilterState(initialState);
+    }
+  }, []);
+
   // Handle search input
   const handleSearch = (search: string) => {
+    console.log("Search:", search);
+    setLocalFilterState(prev => ({ ...prev, search }));
     updateQueryParams({ search });
   };
 
   // Handle filter changes
   const handleFilterChange = (updates: Partial<typeof filterState>) => {
+    console.log("Filter change:", updates);
+    
+    // Update local state immediately for responsive UI
+    setLocalFilterState(prev => ({ ...prev, ...updates }));
+    
+    // Update URL parameters for state persistence
     updateQueryParams(updates);
   };
 
