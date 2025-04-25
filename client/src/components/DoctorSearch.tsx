@@ -122,9 +122,9 @@ export default function DoctorSearch({ doctors, onSearch, searchValue }: DoctorS
                 <div>
                   <div className="font-medium">{doctor.name}</div>
                   <div className="text-sm text-gray-500">
-                    {Array.isArray(doctor.specialty) 
-                      ? doctor.specialty[0]?.toUpperCase() 
-                      : doctor.specialty?.toUpperCase()}
+                    {Array.isArray(doctor.specialty) && doctor.specialty.length > 0
+                      ? String(doctor.specialty[0]).toUpperCase()
+                      : ""}
                   </div>
                 </div>
                 <svg 

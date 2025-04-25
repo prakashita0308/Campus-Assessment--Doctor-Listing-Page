@@ -10,7 +10,7 @@ export default function DoctorList({ doctors, filterState }: DoctorListProps) {
   // Apply filtering and sorting
   const filteredDoctors = doctors.filter(doctor => {
     // Filter by search term
-    if (filterState.search && !doctor.name.toLowerCase().includes(filterState.search.toLowerCase())) {
+    if (filterState.search && (!doctor.name || !doctor.name.toLowerCase().includes(filterState.search.toLowerCase()))) {
       return false;
     }
 
