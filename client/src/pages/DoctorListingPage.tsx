@@ -11,7 +11,7 @@ export default function DoctorListingPage() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [specialties, setSpecialties] = useState<string[]>([]);
   
-  // Define filter state directly in the component
+
   const [filterState, setFilterState] = useState<DoctorFilterState>({
     search: "",
     specialties: [],
@@ -19,26 +19,26 @@ export default function DoctorListingPage() {
     sortBy: ''
   });
 
-  // Fetch doctors data
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["doctors"],
     queryFn: fetchDoctors,
   });
 
-  // Process and set doctors data when it's loaded
+ 
   useEffect(() => {
     if (data) {
-      // Transform data to match our Doctor type if needed
+
       const processedDoctors = data.map((doc: any) => {
-        // Extract experience years from text (e.g., "13 Years of experience")
+       
         const experienceMatch = doc.experience ? doc.experience.match(/(\d+)/) : null;
         const experienceYears = experienceMatch ? parseInt(experienceMatch[1]) : 0;
         
-        // Extract fee amount (remove currency symbol)
+        
         const feesMatch = doc.fees ? doc.fees.match(/\d+/) : null;
         const feesAmount = feesMatch ? parseInt(feesMatch[0]) : 0;
         
-        // Extract specialties from the API response format
+       
         const specialtyList = doc.specialities ? 
           doc.specialities.map((s: any) => s.name).filter(Boolean) : 
           [];
@@ -62,7 +62,7 @@ export default function DoctorListingPage() {
       
       setDoctors(processedDoctors);
       
-      // Extract unique specialties
+      
       const allSpecialties = new Set<string>();
       processedDoctors.forEach(doctor => {
         doctor.specialty.forEach((s: string) => s && allSpecialties.add(s));
@@ -72,17 +72,17 @@ export default function DoctorListingPage() {
     }
   }, [data]);
 
-  // Handle search input
+ 
   const handleSearch = (search: string) => {
     console.log("Search:", search);
     setFilterState(prev => ({ ...prev, search }));
   };
 
-  // Handle filter changes
+ 
   const handleFilterChange = (updates: Partial<DoctorFilterState>) => {
     console.log("Filter change:", updates);
     
-    // Update state
+   
     setFilterState(prev => ({ ...prev, ...updates }));
   };
 
