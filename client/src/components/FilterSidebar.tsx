@@ -31,16 +31,19 @@ export default function FilterSidebar({
 
   // Handle sort option change
   const handleSortChange = (value: 'fees' | 'experience') => {
+    console.log('Sort Changed:', value);
     onFilterChange({ sortBy: value });
   };
 
   // Handle consultation type change
   const handleConsultationChange = (value: ConsultationType | '') => {
+    console.log('Consultation Changed:', value);
     onFilterChange({ consultationType: value });
   };
 
   // Handle specialty filter change
   const handleSpecialtyChange = (specialty: string, checked: boolean) => {
+    console.log('Specialty Changed:', specialty, checked);
     const updatedSpecialties = checked
       ? [...filterState.specialties, specialty]
       : filterState.specialties.filter(s => s !== specialty);
